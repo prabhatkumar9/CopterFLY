@@ -1,11 +1,19 @@
+// main window function 
 window.onload = function () {
+
+  // getting canvas from html page
+  // set height and width of canvas  
   const canvas = document.getElementById("canvas")
   canvas.width = innerWidth;
   canvas.height = 600;
 
+  // create 2d context plane 
   const context = canvas.getContext("2d");
 
+  // environment object created
   const environment = new Environment(canvas, context);
+
+  // copter object created 
   const copter = new Copter(300, 300, context);
 
   // clouds position
@@ -23,6 +31,7 @@ window.onload = function () {
 
   context.fillStyle = "#FFFFFF";
 
+  // game loop infinite 
   function gameLoop() {
     context.fillRect(0, 0, context.width, context.height);
     environment.update();
@@ -36,18 +45,19 @@ window.onload = function () {
     copter.update();
     copter.render();
 
-    if (collisionDetect(copter, clouds)) {
+    // collision detection called 
+    if (collisionDetect(copter, clouds) === true) {
       alert("you loose");
       window.location = '/';
     }
 
+    // create animation and callback
     window.requestAnimationFrame(gameLoop)
 
   }
 
-  // window.requestAnimationFrame(gameLoop);
-  // function generates clouds
 
+  // function generates clouds on canvas
   function genrandomClouds(context, canvasWidth, canvasHeight) {
     let lenTop = Math.round(Math.random() * 200 + 50);
     let lenBottom = canvasHeight - 250 - lenTop;
@@ -77,7 +87,7 @@ window.onload = function () {
         if (alpha > x0 && apha < x1 && beta < y0) {
           return true;
         }
-        return false;
+
       } else {
         let y2 = e.ypos;
         let a = copter.x;
@@ -89,27 +99,16 @@ window.onload = function () {
       }
 
     }
-
+    return false;
   }
 
 };
 
-// checking image placement******
-// context.fillRect(20, 20, 20, 20);
-// context.fillStyle = "green";
-// context.fillRect(100, 20, 20, 20);
-// context.fillStyle = "green";
-// context.fillRect(200, 20, 20, 20);
-// context.fillStyle = "green";
-// context.strokeRect(300, 20, 20, 20);
-// context.strokeRect(400, 20, 20, 20);
-// // context.drawImage(document.getElementById("helicopter1"), 500,20);
-// // context.drawImage(document.getElementById("helicopter"), 700,20
+
 
 ////////////////////////////////////////////////////////////////////////////////////
 
-// create a environment class
-
+// create a environment constructor
 const Environment = function (canvas, context) {
   this.c = canvas;
   this.ctx = context;
@@ -119,6 +118,7 @@ const Environment = function (canvas, context) {
   this.bgSpeed = 4;
   this.bgImg = document.getElementById("bg")
 };
+// update environment position
 Environment.prototype.update = function () {
   this.bgPos -= this.bgSpeed;
   // console.log(this.bgPos);
@@ -127,13 +127,14 @@ Environment.prototype.update = function () {
   }
 };
 
+// draw image on canvas using render function 
 Environment.prototype.render = function () {
   for (let i = 0; i <= this.c.width / this.bgWidth + 1; i++) {
     this.ctx.drawImage(this.bgImg, this.bgPos + i * this.bgWidth, 0);
   };
 }
 
-// COpter
+// COpter constructor create
 const Copter = function (x, y, ctx) {
   this.x = x;
   this.y = y;
@@ -149,6 +150,8 @@ const Copter = function (x, y, ctx) {
     document.getElementById("copter2"),
     document.getElementById("copter3")
   ];
+
+  // spacebar identify and update y position 
   var self = this;
   window.addEventListener("keydown", function (e) {
     if (e.keyCode === 32) {
@@ -157,6 +160,7 @@ const Copter = function (x, y, ctx) {
   });
 }
 
+// update copter position 
 Copter.prototype.update = function () {
   this.ticks++;
   if (this.ticks % 15 === 0) {
@@ -168,14 +172,15 @@ Copter.prototype.update = function () {
   }
 }
 
+// copter draw on canvas using render funtion 
 Copter.prototype.render = function () {
   let renderX = this.x - this.width / 2;
   let renderY = this.y - this.height / 2;
   this.ctx.drawImage(this.fly[this.flyIndex], renderX, renderY);
 }
 
-//   creating clouds
 
+//   creating clouds constructor
 const Cloud = function (xpos, ypos, length, speed, context) {
   this.xpos = xpos;
   this.ypos = ypos;
@@ -185,12 +190,15 @@ const Cloud = function (xpos, ypos, length, speed, context) {
   this.width = 130;
 };
 
+
+// update cloud position 
 Cloud.prototype.update = function () {
   this.xpos -= this.speed;
 };
 
+// draw clouds on canvas 
 Cloud.prototype.render = function () {
-  // this.ctx.save();
+
   // formation of clouds
   this.ctx.fillStyle = "Gray";
   this.ctx.fillRect(this.xpos, this.ypos, this.width, this.length);
@@ -201,6 +209,5 @@ Cloud.prototype.render = function () {
     this.width - 2,
     this.length - 2
   );
-  // this.ctx.fillStyle = "green";
-  // this.ctx.restore();
+
 }
